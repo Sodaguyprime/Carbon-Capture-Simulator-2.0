@@ -1,10 +1,18 @@
 import { motion } from 'framer-motion'
+import { Link, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 
-const navLinks = ['Simulator', 'How It Works', 'Data', 'Research', 'About']
+const navLinks = [
+  { label: 'Simulator', to: '/' },
+  { label: 'How It Works', to: '/' },
+  { label: 'Data', to: '/' },
+  { label: 'Research', to: '/' },
+  { label: 'About', to: '/' },
+]
 
 export default function Navbar() {
   const { theme, mode, toggle } = useTheme()
+  const location = useLocation()
 
   return (
     <motion.nav
@@ -29,34 +37,36 @@ export default function Navbar() {
       }}
     >
       {/* Logo */}
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-      >
-        <div style={{
-          width: 32, height: 32, borderRadius: 8,
-          background: theme.accent,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: `0 0 12px ${theme.accentGlow}`,
-        }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"
-              fill={theme.accentText} />
-          </svg>
-        </div>
-        <span style={{
-          fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em',
-          color: theme.text,
-        }}>
-          CarbonCap<span style={{ color: theme.accent }}>.</span>
-        </span>
-      </motion.div>
+      <Link to="/" style={{ textDecoration: 'none' }}>
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+        >
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: theme.accent,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: `0 0 12px ${theme.accentGlow}`,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"
+                fill={theme.accentText} />
+            </svg>
+          </div>
+          <span style={{
+            fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em',
+            color: theme.text,
+          }}>
+            CarbonCap<span style={{ color: theme.accent }}>.</span>
+          </span>
+        </motion.div>
+      </Link>
 
       {/* Nav links */}
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         {navLinks.map(link => (
           <motion.a
-            key={link}
+            key={link.label}
             whileHover={{ color: theme.accent }}
             style={{
               color: theme.textMuted,
@@ -69,9 +79,37 @@ export default function Navbar() {
               transition: 'color 0.2s',
             }}
           >
-            {link}
+            {link.label}
           </motion.a>
         ))}
+
+        {/* Models link — highlighted */}
+        <Link to="/models" style={{ textDecoration: 'none' }}>
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: location.pathname === '/models'
+                ? theme.accentGlow
+                : 'transparent',
+              border: `1.5px solid ${location.pathname === '/models' ? theme.accent : theme.border}`,
+              color: location.pathname === '/models' ? theme.accent : theme.text,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            <span style={{ fontSize: 13 }}>⬡</span>
+            Check out Models
+          </motion.div>
+        </Link>
       </div>
 
       {/* Right side */}
