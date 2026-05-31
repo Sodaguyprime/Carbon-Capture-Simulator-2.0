@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import { useNavigate } from 'react-router-dom'
 
 const navLinks = [
   { label: 'Simulator', to: '/' },
@@ -13,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const { theme, mode, toggle } = useTheme()
   const location = useLocation()
+  const navigate = useNavigate()
 
   return (
     <motion.nav
@@ -137,8 +139,9 @@ export default function Navbar() {
         <motion.button
           whileHover={{ scale: 1.03, boxShadow: `0 0 20px ${theme.accentGlow}` }}
           whileTap={{ scale: 0.97 }}
+          onClick={() => navigate('/simulation')}
           style={{
-            background: theme.accent,
+            background: location.pathname === '/simulation' ? theme.accentHover : theme.accent,
             color: theme.accentText,
             border: 'none',
             borderRadius: 8,
