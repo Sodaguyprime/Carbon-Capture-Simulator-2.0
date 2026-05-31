@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useTheme } from '../context/ThemeContext'
 
@@ -473,16 +474,14 @@ function SummaryPanel({ values, theme, onRun, onReset }) {
 // ── Page ────────────────────────────────────────────────────────────────────
 export default function SimulationPage() {
   const { theme } = useTheme()
+  const navigate = useNavigate()
 
   const defaultValues = Object.fromEntries(INPUT_CONFIGS.map(cfg => [cfg.id, cfg.defaultVal]))
   const [values, setValues] = useState(defaultValues)
 
   const handleChange = (id, val) => setValues(prev => ({ ...prev, [id]: val }))
   const handleReset = () => setValues(defaultValues)
-  const handleRun = () => {
-    // TODO: navigate to results page
-    console.log('Running simulation:', values)
-  }
+  const handleRun = () => navigate('/results', { state: { values } })
 
   return (
     <div style={{ background: theme.bg, minHeight: '100vh' }}>
