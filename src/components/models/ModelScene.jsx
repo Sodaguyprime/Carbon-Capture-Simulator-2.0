@@ -1,13 +1,22 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { useGLTF, OrbitControls, Environment, ContactShadows, Center } from '@react-three/drei'
-import { useThree, useFrame } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+
+const TARGET_SIZE = 5.5
 
 function Model({ path, autoRotate }) {
   const { scene } = useGLTF(path)
   const ref = useRef()
 
-  // Auto-rotate gently when not interacting
+  // Compute a normalizing scale so every model fills ~TARGET_SIZE units
+  const normalizedScale = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(scene)
+    const size = box.getSize(new THREE.Vector3())
+    const maxDim = Math.max(size.x, size.y, size.z)
+    return maxDim > 0 ? TARGET_SIZE / maxDim : 1
+  }, [scene])
+
   useFrame((_, delta) => {
     if (autoRotate && ref.current) {
       ref.current.rotation.y += delta * 0.3
@@ -25,7 +34,7 @@ function Model({ path, autoRotate }) {
 
   return (
     <Center>
-      <primitive ref={ref} object={scene} />
+      <primitive ref={ref} object={scene} scale={normalizedScale} />
     </Center>
   )
 }
@@ -47,7 +56,7 @@ export default function ModelScene({ modelPath, autoRotate }) {
 
       {/* Ground shadow */}
       <ContactShadows
-        position={[0, -2.5, 0]}
+        position={[0, -1.8, 0]}
         opacity={0.35}
         scale={10}
         blur={2.5}
@@ -58,8 +67,8 @@ export default function ModelScene({ modelPath, autoRotate }) {
       {/* Controls */}
       <OrbitControls
         enablePan={false}
-        minDistance={2}
-        maxDistance={14}
+        minDistance={3}
+        maxDistance={20}
         autoRotate={false}
         dampingFactor={0.08}
         enableDamping

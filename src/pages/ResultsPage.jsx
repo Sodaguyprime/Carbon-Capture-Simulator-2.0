@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import Navbar from '../components/Navbar'
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
   PieChart, Pie, Cell,
@@ -220,68 +221,9 @@ export default function ResultsPage() {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif',
     }}>
 
-      {/* ── TOP BAR ──────────────────────────────────────────────── */}
-      <div style={{
-        height: 50, flexShrink: 0,
-        display: 'flex', alignItems: 'center',
-        padding: '0 22px', gap: 14,
-        background: T.bgDeep,
-        borderBottom: `1px solid ${T.border}`,
-        zIndex: 50,
-      }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 4 }}>
-          <div style={{ width: 24, height: 24, borderRadius: 6, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill={T.bg}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-          </div>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '-0.02em', color: T.textBright }}>
-            CarbonCap<span style={{ color: T.accent }}>.</span>
-          </span>
-        </div>
-
-        {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
-          <span
-            style={{ color: T.muted, cursor: 'pointer', transition: 'color 0.2s' }}
-            onClick={() => navigate('/simulation')}
-            onMouseEnter={e => e.target.style.color = T.text}
-            onMouseLeave={e => e.target.style.color = T.muted}
-          >Configure</span>
-          <span style={{ color: T.dim, fontSize: 10 }}>›</span>
-          <span style={{ color: T.muted }}>Processing</span>
-          <span style={{ color: T.dim, fontSize: 10 }}>›</span>
-          <span style={{ color: T.accent, fontWeight: 700 }}>Results</span>
-        </div>
-
-        <div style={{ flex: 1 }} />
-
-        {/* Status badge */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: T.glow, border: `1px solid ${T.borderGlow}`,
-          borderRadius: 7, padding: '4px 12px',
-          fontSize: 11, fontWeight: 700, color: T.accent,
-        }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.accent, boxShadow: `0 0 6px ${T.accent}` }} />
-          Simulation Complete
-        </div>
-
-        {/* Reconfigure */}
-        <motion.button
-          whileHover={{ borderColor: T.muted }}
-          onClick={() => navigate('/simulation')}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: 'transparent', border: `1px solid ${T.border}`,
-            borderRadius: 7, padding: '4px 12px',
-            fontSize: 11, fontWeight: 600, color: T.muted, cursor: 'pointer',
-            transition: 'border-color 0.2s',
-          }}
-        >
-          <ArrowLeft size={12} color={T.muted} />
-          Reconfigure
-        </motion.button>
-      </div>
+      <Navbar />
+      {/* spacer so fixed navbar doesn't overlap content */}
+      <div style={{ height: 64, flexShrink: 0 }} />
 
       {/* ── BODY ─────────────────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
