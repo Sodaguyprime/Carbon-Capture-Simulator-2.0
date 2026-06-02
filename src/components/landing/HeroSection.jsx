@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
 
 const fadeUp = {
@@ -11,6 +12,7 @@ const fadeUp = {
 
 export default function HeroSection() {
   const { theme } = useTheme()
+  const navigate = useNavigate()
 
   return (
     <section style={{
@@ -99,6 +101,7 @@ export default function HeroSection() {
           <motion.button
             whileHover={{ scale: 1.04, boxShadow: `0 0 32px ${theme.accentGlow}` }}
             whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/simulation')}
             style={{
               background: theme.accent,
               color: theme.accentText,
@@ -115,6 +118,7 @@ export default function HeroSection() {
           <motion.button
             whileHover={{ scale: 1.03, borderColor: theme.accent, color: theme.accent }}
             whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/how-it-works')}
             style={{
               background: 'transparent',
               color: theme.text,
@@ -126,7 +130,7 @@ export default function HeroSection() {
               cursor: 'pointer',
               transition: 'border-color 0.2s, color 0.2s',
             }}>
-            Watch Demo
+            How It Works
           </motion.button>
         </motion.div>
 

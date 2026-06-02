@@ -4,11 +4,10 @@ import { useTheme } from '../context/ThemeContext'
 import { useNavigate } from 'react-router-dom'
 
 const navLinks = [
-  { label: 'Simulator', to: '/' },
-  { label: 'How It Works', to: '/' },
-  { label: 'Data', to: '/' },
-  { label: 'Research', to: '/' },
-  { label: 'About', to: '/' },
+  { label: 'Home', to: '/' },
+  { label: 'How It Works', to: '/how-it-works' },
+  { label: 'Research', to: '/research' },
+  { label: 'About', to: '/about' },
 ]
 
 export default function Navbar() {
@@ -66,24 +65,28 @@ export default function Navbar() {
 
       {/* Nav links */}
       <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-        {navLinks.map(link => (
-          <motion.a
-            key={link.label}
-            whileHover={{ color: theme.accent }}
-            style={{
-              color: theme.textMuted,
-              textDecoration: 'none',
-              fontSize: 14,
-              fontWeight: 500,
-              padding: '6px 12px',
-              borderRadius: 6,
-              cursor: 'pointer',
-              transition: 'color 0.2s',
-            }}
-          >
-            {link.label}
-          </motion.a>
-        ))}
+        {navLinks.map(link => {
+          const active = location.pathname === link.to
+          return (
+            <Link key={link.label} to={link.to} style={{ textDecoration: 'none' }}>
+              <motion.span
+                whileHover={{ color: theme.accent }}
+                style={{
+                  display: 'inline-block',
+                  color: active ? theme.accent : theme.textMuted,
+                  fontSize: 14,
+                  fontWeight: active ? 700 : 500,
+                  padding: '6px 12px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  transition: 'color 0.2s',
+                }}
+              >
+                {link.label}
+              </motion.span>
+            </Link>
+          )
+        })}
 
         {/* Models link — highlighted */}
         <Link to="/models" style={{ textDecoration: 'none' }}>
