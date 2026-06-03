@@ -1,6 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
+import { loadInputs, saveInputs } from '../lib/inputStore'
 import Navbar from '../components/Navbar'
 import LoadingScreen from '../components/LoadingScreen'
 import { useTheme } from '../context/ThemeContext'
@@ -130,17 +133,89 @@ const LeafIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="
 const CheckIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>)
 const ArrowLeft = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>)
 const RefreshIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>)
+const DownloadIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>)
+const SpinnerIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round"><path d="M12 2a10 10 0 0 1 10 10"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.7s" repeatCount="indefinite" /></path></svg>)
 
 // ── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function ResultsPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const { theme } = useTheme()
-  const inputs = location.state?.values ?? DEFAULTS
+
+  // Resolve inputs: a fresh run (router state) wins, otherwise restore the last
+  // saved run, otherwise fall back to defaults.
+  const inputs = location.state?.values ?? loadInputs() ?? DEFAULTS
+
+  // Persist whenever we arrive with a fresh run so a later return restores it.
+  useEffect(() => {
+    if (location.state?.values) saveInputs(location.state.values)
+  }, [location.state])
 
   const [loading, setLoading] = useState(true)
+  const [exporting, setExporting] = useState(false)
+  const reportRef = useRef(null)
 
   const { series, kpi } = useMemo(() => runSimulation(inputs), [inputs])
+
+  // ── Export the dashboard to a clean, paginated PDF ──────────────────────────
+  async function handleDownloadPdf() {
+    const node = reportRef.current
+    if (!node || exporting) return
+    setExporting(true)
+    try {
+      // Let the layout reflow into "flow mode" (no inner scroll) before capturing
+      await new Promise(r => setTimeout(r, 350))
+
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: T.bg,
+        width: node.scrollWidth,
+        height: node.scrollHeight,
+        // Exclude the action buttons and any image that can't be inlined (e.g. CORS hero)
+        filter: (el) => {
+          if (el.dataset && el.dataset.exportHide !== undefined) return false
+          if (el.tagName === 'IMG' && !el.complete) return false
+          return true
+        },
+      })
+
+      const img = new Image()
+      img.src = dataUrl
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej })
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageW = pdf.internal.pageSize.getWidth()
+      const pageH = pdf.internal.pageSize.getHeight()
+      const margin = 8
+      const usableW = pageW - margin * 2
+
+      // Scale image to page width, then slice it across pages
+      const imgW = usableW
+      const imgH = (img.height / img.width) * imgW
+      const pageSliceH = pageH - margin * 2
+
+      let heightLeft = imgH
+      let position = margin
+      pdf.addImage(dataUrl, 'PNG', margin, position, imgW, imgH)
+      heightLeft -= pageSliceH
+
+      while (heightLeft > 0) {
+        pdf.addPage()
+        position = margin - (imgH - heightLeft)
+        pdf.addImage(dataUrl, 'PNG', margin, position, imgW, imgH)
+        heightLeft -= pageSliceH
+      }
+
+      const stamp = new Date().toISOString().slice(0, 10)
+      pdf.save(`carbon-capture-results-${stamp}.pdf`)
+    } catch (err) {
+      console.error('PDF export failed:', err)
+      alert('Sorry — the PDF could not be generated. Please try again.')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const donutData = [
     { name: 'Converted', value: kpi.processEfficiency },
@@ -169,13 +244,21 @@ export default function ResultsPage() {
         <Navbar />
         <div style={{ height: 64, flexShrink: 0 }} />
 
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <div
+          ref={reportRef}
+          style={{
+            flex: 1, display: 'flex',
+            overflow: exporting ? 'visible' : 'hidden',
+            background: T.bg,
+          }}
+        >
 
           {/* ── SIDEBAR ──────────────────────────────────────────────── */}
           <div style={{
             width: 252, flexShrink: 0,
             background: T.sidebar, borderRight: `1px solid ${T.border}`,
-            display: 'flex', flexDirection: 'column', overflowY: 'auto',
+            display: 'flex', flexDirection: 'column',
+            overflowY: exporting ? 'visible' : 'auto',
           }}>
             {/* Hero */}
             <div style={{ position: 'relative', height: 200, flexShrink: 0, overflow: 'hidden' }}>
@@ -230,13 +313,25 @@ export default function ResultsPage() {
               {/* Actions */}
               <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button
+                  onClick={handleDownloadPdf}
+                  disabled={exporting}
+                  data-export-hide
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: T.accent, color: '#04140A', border: `1px solid ${T.bright}`, borderRadius: 10, padding: '11px', fontSize: 12, fontWeight: 800, cursor: exporting ? 'wait' : 'pointer', opacity: exporting ? 0.75 : 1, boxShadow: `0 6px 18px ${T.glowBright}` }}
+                >
+                  {exporting
+                    ? <><SpinnerIcon size={14} color="#04140A" /> Generating PDF…</>
+                    : <><DownloadIcon size={14} color="#04140A" /> Download PDF</>}
+                </button>
+                <button
                   onClick={() => { setLoading(true) }}
+                  data-export-hide
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: T.glow, color: T.bright, border: `1px solid ${T.borderGlow}`, borderRadius: 10, padding: '10px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                 >
                   <RefreshIcon size={13} color={T.bright} /> Re-run Simulation
                 </button>
                 <button
                   onClick={() => navigate('/simulation')}
+                  data-export-hide
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'transparent', color: T.muted, border: `1px solid ${T.border}`, borderRadius: 10, padding: '10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
                 >
                   <ArrowLeft size={13} color={T.muted} /> Back to Inputs
@@ -255,7 +350,7 @@ export default function ResultsPage() {
           </div>
 
           {/* ── MAIN CONTENT ─────────────────────────────────────────── */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ flex: 1, overflowY: exporting ? 'visible' : 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
             {/* KPI row */}
             <div style={{ display: 'flex', gap: 12 }}>

@@ -68,6 +68,7 @@ export function runSimulation(inputs) {
   // recycle loop), so its Monod factor stays constant through the run.
   const fCO2 = CO20 / (P.ksCO2 + CO20)
 
+  
   const series = []
   const snapshot = (h) => ({
     hour: round(h, 2),

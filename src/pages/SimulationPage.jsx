@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useTheme } from '../context/ThemeContext'
+import { loadInputs, saveInputs } from '../lib/inputStore'
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 const AlgaeIcon = ({ size = 18, color }) => (
@@ -477,11 +478,16 @@ export default function SimulationPage() {
   const navigate = useNavigate()
 
   const defaultValues = Object.fromEntries(INPUT_CONFIGS.map(cfg => [cfg.id, cfg.defaultVal]))
-  const [values, setValues] = useState(defaultValues)
+  // Restore the last-used inputs (merged over defaults to stay safe if the
+  // saved shape is partial/stale), otherwise start from defaults.
+  const [values, setValues] = useState(() => ({ ...defaultValues, ...(loadInputs() ?? {}) }))
 
   const handleChange = (id, val) => setValues(prev => ({ ...prev, [id]: val }))
   const handleReset = () => setValues(defaultValues)
-  const handleRun = () => navigate('/results', { state: { values } })
+  const handleRun = () => {
+    saveInputs(values)
+    navigate('/results', { state: { values } })
+  }
 
   return (
     <div style={{ background: theme.bg, minHeight: '100vh' }}>
