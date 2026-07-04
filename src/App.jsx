@@ -7,6 +7,7 @@ import ResultsPage from './pages/ResultsPage'
 import HowItWorksPage from './pages/HowItWorksPage'
 import ResearchPage from './pages/ResearchPage'
 import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/research" element={<ResearchPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

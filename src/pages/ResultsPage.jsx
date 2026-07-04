@@ -129,7 +129,6 @@ const ShieldIcon = ({ size, color }) => (<svg width={size} height={size} viewBox
 const FlaskIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 3h6" /><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.3h12.4A1.5 1.5 0 0 0 19.5 19L14 9V3" /><path d="M7 15h10" /></svg>)
 const DropIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.5C12 2.5 5 10 5 14a7 7 0 0 0 14 0c0-4-7-11.5-7-11.5z" /></svg>)
 const BoltIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>)
-const LeafIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round"><path d="M12 22V12" /><path d="M12 12c0-5-4.5-7.5-7.5-5.5" /><path d="M12 12c0-5 4.5-7.5 7.5-5.5" /></svg>)
 const CheckIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>)
 const ArrowLeft = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>)
 const RefreshIcon = ({ size, color }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>)
@@ -229,14 +228,42 @@ export default function ResultsPage() {
   const paramLabels = { algalBiomass: 'Algal Biomass', yeastBiomass: 'Yeast Biomass', co2Concentration: 'CO₂ Input', simulationDuration: 'Duration' }
   const paramUnits = { algalBiomass: 'g/L', yeastBiomass: 'g/L', co2Concentration: 'g/L', simulationDuration: 'hrs' }
 
+  // Responsive + export layout. Overflow is driven by [data-exporting] (set
+  // while capturing the PDF) and media queries rather than inline styles, so
+  // the dashboard can stack and scroll on phones without breaking the export.
+  const resCss = `
+    .res-shell{ height:100vh; overflow:hidden; }
+    .res-body{ display:flex; overflow:hidden; }
+    .res-body[data-exporting]{ overflow:visible; }
+    .res-sidebar{ width:252px; flex-shrink:0; overflow-y:auto; }
+    .res-sidebar[data-exporting]{ overflow-y:visible; }
+    .res-main{ overflow-y:auto; }
+    .res-main[data-exporting]{ overflow-y:visible; }
+    .res-kpi{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .res-charts{ display:flex; gap:12px; }
+    .res-metrics{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }
+    @media (max-width: 960px){
+      .res-shell{ height:auto; min-height:100vh; overflow:visible; }
+      .res-body{ flex-direction:column; overflow:visible; }
+      .res-sidebar{ width:100%; overflow-y:visible; }
+      .res-main{ overflow-y:visible; }
+      .res-charts{ flex-direction:column; }
+      .res-metrics{ grid-template-columns:repeat(3,1fr); }
+    }
+    @media (max-width: 640px){
+      .res-kpi{ grid-template-columns:repeat(2,1fr); }
+      .res-metrics{ grid-template-columns:repeat(2,1fr); }
+    }
+  `
+
   return (
     <>
       <AnimatePresence>
         {loading && <LoadingScreen theme={theme} onDone={() => setLoading(false)} />}
       </AnimatePresence>
 
-      <div style={{
-        height: '100vh', overflow: 'hidden',
+      <style>{resCss}</style>
+      <div className="res-shell" style={{
         display: 'flex', flexDirection: 'column',
         background: T.bg, color: T.text,
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif',
@@ -246,19 +273,15 @@ export default function ResultsPage() {
 
         <div
           ref={reportRef}
-          style={{
-            flex: 1, display: 'flex',
-            overflow: exporting ? 'visible' : 'hidden',
-            background: T.bg,
-          }}
+          className="res-body"
+          data-exporting={exporting || undefined}
+          style={{ flex: 1, background: T.bg }}
         >
 
           {/* ── SIDEBAR ──────────────────────────────────────────────── */}
-          <div style={{
-            width: 252, flexShrink: 0,
+          <div className="res-sidebar" data-exporting={exporting || undefined} style={{
             background: T.sidebar, borderRight: `1px solid ${T.border}`,
             display: 'flex', flexDirection: 'column',
-            overflowY: exporting ? 'visible' : 'auto',
           }}>
             {/* Hero */}
             <div style={{ position: 'relative', height: 200, flexShrink: 0, overflow: 'hidden' }}>
@@ -350,10 +373,10 @@ export default function ResultsPage() {
           </div>
 
           {/* ── MAIN CONTENT ─────────────────────────────────────────── */}
-          <div style={{ flex: 1, overflowY: exporting ? 'visible' : 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="res-main" data-exporting={exporting || undefined} style={{ flex: 1, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
             {/* KPI row */}
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="res-kpi">
               <KpiCard label="CO₂ Captured" value={kpi.co2Captured} unit="g/L" sub={`O₂ released: ${kpi.o2Released} g/L`} color={T.bright} Icon={ShieldIcon} delay={0.08} />
               <KpiCard label="Glucose Produced" value={kpi.glucoseProduced} unit="g/L" sub="Algal carbohydrate (substrate)" color={T.blue} Icon={DropIcon} delay={0.15} />
               <KpiCard label="Ethanol Produced" value={kpi.ethanolProduced} unit="g/L" sub={`Yield ${kpi.ethanolYield} g/g glucose`} color={T.amber} Icon={FlaskIcon} delay={0.22} />
@@ -361,7 +384,7 @@ export default function ResultsPage() {
             </div>
 
             {/* Row 2: Biomass growth + efficiency donut */}
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="res-charts">
               <ChartCard title="Biomass Growth — Logistic Model" sub="Chlorella (algae) & S. cerevisiae (yeast), g/L" delay={0.35} style={{ flex: '1 1 0', minWidth: 0 }}>
                 <ResponsiveContainer width="100%" height={210}>
                   <LineChart data={series} margin={{ top: 6, right: 8, bottom: 0, left: -16 }}>
@@ -415,7 +438,7 @@ export default function ResultsPage() {
             </div>
 
             {/* Row 3: Glucose & Ethanol + CO2 balance */}
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="res-charts">
               <ChartCard title="Glucose & Ethanol — Luedeking-Piret" sub="product formation over time (g/L)" delay={0.45} style={{ flex: 1, minWidth: 0 }}>
                 <ResponsiveContainer width="100%" height={180}>
                   <AreaChart data={series} margin={{ top: 6, right: 8, bottom: 0, left: -16 }}>
@@ -470,7 +493,7 @@ export default function ResultsPage() {
             </div>
 
             {/* Row 4: summary stat grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+            <div className="res-metrics">
               {[
                 { label: 'Final Algae', value: kpi.finalAlgae, unit: 'g/L', color: T.bright },
                 { label: 'Final Yeast', value: kpi.finalYeast, unit: 'g/L', color: T.amber },

@@ -489,12 +489,32 @@ export default function SimulationPage() {
     navigate('/results', { state: { values } })
   }
 
+  const css = `
+    .sim-header{ max-width:1200px; margin:0 auto; padding:96px 32px 0; }
+    .sim-main{
+      max-width:1200px; margin:0 auto; padding:24px 32px 80px;
+      display:flex; gap:24px; align-items:flex-start;
+    }
+    .sim-inputs{ flex:1 1 0; min-width:0; }
+    .sim-summary{ width:296px; flex-shrink:0; }
+    .sim-input-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    @media (max-width: 900px){
+      .sim-header{ padding:88px 20px 0; }
+      .sim-main{ flex-direction:column; padding:24px 20px 64px; }
+      .sim-summary{ width:100%; }
+    }
+    @media (max-width: 560px){
+      .sim-input-grid{ grid-template-columns:1fr; }
+    }
+  `
+
   return (
     <div style={{ background: theme.bg, minHeight: '100vh' }}>
       <Navbar />
+      <style>{css}</style>
 
       {/* Page header */}
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '96px 32px 0' }}>
+      <div className="sim-header">
         <motion.div
           initial={{ opacity: 0, y: -18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -556,16 +576,9 @@ export default function SimulationPage() {
       </div>
 
       {/* Main content */}
-      <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-        padding: '24px 32px 80px',
-        display: 'flex',
-        gap: 24,
-        alignItems: 'flex-start',
-      }}>
+      <div className="sim-main">
         {/* Left column — inputs */}
-        <div style={{ flex: '1 1 0', minWidth: 0 }}>
+        <div className="sim-inputs">
           {/* Section label */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -591,7 +604,7 @@ export default function SimulationPage() {
           </motion.div>
 
           {/* 2-col grid of input cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+          <div className="sim-input-grid">
             {INPUT_CONFIGS.map((config, i) => (
               <InputCard
                 key={config.id}
@@ -632,7 +645,7 @@ export default function SimulationPage() {
         </div>
 
         {/* Right column — summary */}
-        <div style={{ width: 296, flexShrink: 0 }}>
+        <div className="sim-summary">
           <SummaryPanel
             values={values}
             theme={theme}

@@ -1,4 +1,13 @@
+import { Link } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
+
+const footerLinks = [
+  { label: 'How It Works', to: '/how-it-works' },
+  { label: 'Models', to: '/models' },
+  { label: 'Research', to: '/research' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
+]
 
 export default function Footer() {
   const { theme } = useTheme()
@@ -18,17 +27,19 @@ export default function Footer() {
         flexWrap: 'wrap',
         gap: 16,
       }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: theme.text, letterSpacing: '-0.02em' }}>
-          CarbonCap<span style={{ color: theme.accent }}>.</span>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: theme.text, letterSpacing: '-0.02em' }}>
+            CarbonCap<span style={{ color: theme.accent }}>.</span>
+          </span>
+        </Link>
+        <span style={{ fontSize: 13, color: theme.textMuted, textAlign: 'center' }}>
+          © 2026 CarbonCap Simulator · Cyprus International University
         </span>
-        <span style={{ fontSize: 13, color: theme.textMuted }}>
-          © 2026 CarbonCap Simulator. Built for a cooler planet.
-        </span>
-        <div style={{ display: 'flex', gap: 20 }}>
-          {['Privacy', 'Terms', 'Contact'].map(l => (
-            <a key={l} href="#" style={{
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+          {footerLinks.map(l => (
+            <Link key={l.label} to={l.to} style={{
               fontSize: 13, color: theme.textMuted, textDecoration: 'none',
-            }}>{l}</a>
+            }}>{l.label}</Link>
           ))}
         </div>
       </div>
