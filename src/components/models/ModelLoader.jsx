@@ -28,10 +28,12 @@ export default function ModelLoader() {
             borderRadius: 14,
             boxShadow: `0 0 36px ${theme.accentGlow}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24,
           }}
         >
-          ⬡
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={theme.accentText} strokeWidth={1.8} strokeLinejoin="round">
+            <path d="M12 2 21 7v10l-9 5-9-5V7z" />
+            <path d="m3.5 7 8.5 5 8.5-5" opacity="0.6" />
+          </svg>
         </motion.div>
 
         <div style={{ textAlign: 'center', width: 240 }}>

@@ -15,28 +15,32 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-// ── Standalone dark dashboard palette (matches the approved output design) ───
+// ── Standalone dark dashboard palette — aligned to the forest-ink identity ───
 const T = {
-  bg: '#070A10',
-  card: '#0C1420',
-  cardAlt: '#08101A',
-  sidebar: '#060910',
-  text: '#D0DFF0',
-  textBright: '#EEF5FF',
-  muted: '#3A566A',
-  border: '#0E1E2C',
-  borderGlow: '#183828',
-  accent: '#22C55E',
-  bright: '#4ADE80',
-  glow: 'rgba(34,197,94,0.10)',
-  glowMed: 'rgba(34,197,94,0.20)',
-  glowBright: 'rgba(34,197,94,0.38)',
-  amber: '#F59E0B',
-  blue: '#60A5FA',
-  purple: '#C084FC',
-  grid: '#0B1820',
-  bars: ['#0D4A22', '#166534', '#16A34A', '#22C55E', '#4ADE80'],
+  bg: '#080D0A',
+  card: '#111A14',
+  cardAlt: '#0D140F',
+  sidebar: '#060A07',
+  text: '#C9D8CD',
+  textBright: '#EAF3EC',
+  muted: '#5E7568',
+  border: '#1C2A21',
+  borderGlow: '#2A4E36',
+  accent: '#3ECF7F',
+  bright: '#57E092',
+  glow: 'rgba(62,207,127,0.10)',
+  glowMed: 'rgba(62,207,127,0.20)',
+  glowBright: 'rgba(62,207,127,0.38)',
+  amber: '#F5B841',
+  blue: '#63A8F5',
+  purple: '#C08CF7',
+  grid: '#122016',
+  bars: ['#0D3D22', '#155E33', '#1C9450', '#3ECF7F', '#7BE6A5'],
 }
+
+// Standalone font stacks (this dashboard renders outside the themed tree)
+const MONO = '"IBM Plex Mono", ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace'
+const DISP = '"Fraunces", Georgia, "Times New Roman", serif'
 
 const DEFAULTS = {
   algalBiomass: 1,
@@ -86,10 +90,10 @@ function KpiCard({ label, value, unit, sub, color, Icon, delay = 0 }) {
       }} />
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div style={{ minWidth: 0 }}>
-          <p style={{ margin: '0 0 8px', fontSize: 10, fontWeight: 700, color: T.muted, letterSpacing: '0.09em', textTransform: 'uppercase' }}>{label}</p>
-          <p style={{ margin: 0, fontSize: 30, fontWeight: 900, color, letterSpacing: '-0.04em', lineHeight: 1 }}>
+          <p style={{ margin: '0 0 8px', fontFamily: MONO, fontSize: 10, fontWeight: 600, color: T.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</p>
+          <p style={{ margin: 0, fontFamily: MONO, fontSize: 29, fontWeight: 600, color, letterSpacing: '-0.03em', lineHeight: 1 }}>
             {value}
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.muted, marginLeft: 4 }}>{unit}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: T.muted, marginLeft: 4 }}>{unit}</span>
           </p>
           {sub && <p style={{ margin: '6px 0 0', fontSize: 11, color: T.muted, lineHeight: 1.4 }}>{sub}</p>}
         </div>
@@ -116,8 +120,8 @@ function ChartCard({ title, sub, children, delay = 0, style = {} }) {
       style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, padding: '16px 18px', ...style }}
     >
       <div style={{ marginBottom: 14 }}>
-        <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: T.textBright, letterSpacing: '-0.01em' }}>{title}</p>
-        {sub && <p style={{ margin: '3px 0 0', fontSize: 10, color: T.muted }}>{sub}</p>}
+        <p style={{ margin: 0, fontFamily: DISP, fontSize: 16, fontWeight: 500, color: T.textBright, letterSpacing: '-0.01em' }}>{title}</p>
+        {sub && <p style={{ margin: '3px 0 0', fontFamily: MONO, fontSize: 10, color: T.muted, letterSpacing: '0.02em' }}>{sub}</p>}
       </div>
       {children}
     </motion.div>
@@ -266,7 +270,7 @@ export default function ResultsPage() {
       <div className="res-shell" style={{
         display: 'flex', flexDirection: 'column',
         background: T.bg, color: T.text,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif',
+        fontFamily: theme.fontBody,
       }}>
         <Navbar />
         <div style={{ height: 64, flexShrink: 0 }} />
@@ -299,20 +303,20 @@ export default function ResultsPage() {
                 </div>
               </div>
               <div style={{ position: 'absolute', bottom: 14, left: 14 }}>
-                <p style={{ margin: 0, fontSize: 52, fontWeight: 900, lineHeight: 1, color: T.bright, letterSpacing: '-0.05em', textShadow: `0 0 40px ${T.glowBright}` }}>
+                <p style={{ margin: 0, fontFamily: theme.fontDisplay, fontSize: 56, fontWeight: 600, lineHeight: 1, color: T.bright, letterSpacing: '-0.03em', textShadow: `0 0 40px ${T.glowBright}` }}>
                   {kpi.ethanolProduced}
-                  <span style={{ fontSize: 18, fontWeight: 700 }}> g/L</span>
+                  <span style={{ fontFamily: theme.fontMono, fontSize: 16, fontWeight: 500 }}> g/L</span>
                 </p>
-                <p style={{ margin: '3px 0 0', fontSize: 10, fontWeight: 700, color: T.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Bioethanol Produced</p>
+                <p style={{ margin: '5px 0 0', fontFamily: theme.fontMono, fontSize: 10, fontWeight: 600, color: T.muted, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Bioethanol Produced</p>
               </div>
             </div>
 
             <div style={{ flex: 1, padding: '14px 14px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
               {/* Highlight */}
               <div style={{ background: T.glowMed, border: `1px solid ${T.borderGlow}`, borderRadius: 10, padding: '12px 14px' }}>
-                <p style={{ margin: '0 0 4px', fontSize: 9, color: T.muted, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase' }}>Total CO₂ Captured</p>
-                <p style={{ margin: 0, fontSize: 24, fontWeight: 900, color: T.bright, letterSpacing: '-0.03em' }}>
-                  {kpi.co2Captured}<span style={{ fontSize: 12, color: T.muted, marginLeft: 4, fontWeight: 600 }}>g/L</span>
+                <p style={{ margin: '0 0 4px', fontFamily: MONO, fontSize: 9, color: T.muted, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Total CO₂ Captured</p>
+                <p style={{ margin: 0, fontFamily: MONO, fontSize: 24, fontWeight: 600, color: T.bright, letterSpacing: '-0.02em' }}>
+                  {kpi.co2Captured}<span style={{ fontSize: 12, color: T.muted, marginLeft: 4, fontWeight: 500 }}>g/L</span>
                 </p>
                 <p style={{ margin: '6px 0 0', fontSize: 10, color: T.muted }}>net {kpi.co2Net} g/L after recycle</p>
               </div>
@@ -415,8 +419,8 @@ export default function ResultsPage() {
                     </Pie>
                   </PieChart>
                   <div style={{ position: 'absolute', textAlign: 'center', pointerEvents: 'none' }}>
-                    <p style={{ margin: 0, fontSize: 28, fontWeight: 900, color: T.bright, letterSpacing: '-0.04em', lineHeight: 1, textShadow: `0 0 20px ${T.glowBright}` }}>{kpi.processEfficiency}%</p>
-                    <p style={{ margin: '4px 0 0', fontSize: 9, fontWeight: 700, color: T.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Efficiency</p>
+                    <p style={{ margin: 0, fontFamily: DISP, fontSize: 30, fontWeight: 600, color: T.bright, letterSpacing: '-0.03em', lineHeight: 1, textShadow: `0 0 20px ${T.glowBright}` }}>{kpi.processEfficiency}%</p>
+                    <p style={{ margin: '4px 0 0', fontFamily: MONO, fontSize: 9, fontWeight: 600, color: T.muted, letterSpacing: '0.09em', textTransform: 'uppercase' }}>Efficiency</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 6 }}>
@@ -510,9 +514,9 @@ export default function ResultsPage() {
                   style={{ background: T.cardAlt, border: `1px solid ${T.border}`, borderRadius: 10, padding: '12px 13px', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', overflow: 'hidden' }}
                 >
                   <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 2.5, background: s.color, borderRadius: '10px 0 0 10px', opacity: 0.7 }} />
-                  <span style={{ fontSize: 9, color: T.muted, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' }}>{s.label}</span>
-                  <span style={{ fontSize: 20, fontWeight: 900, color: s.color, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-                    {s.value}<span style={{ fontSize: 10, color: T.muted, marginLeft: 3, fontWeight: 600 }}>{s.unit}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 9, color: T.muted, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{s.label}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 20, fontWeight: 600, color: s.color, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                    {s.value}<span style={{ fontSize: 10, color: T.muted, marginLeft: 3, fontWeight: 500 }}>{s.unit}</span>
                   </span>
                 </motion.div>
               ))}

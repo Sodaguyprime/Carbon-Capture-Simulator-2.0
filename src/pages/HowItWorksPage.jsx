@@ -78,7 +78,7 @@ export default function HowItWorksPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 }}>
           <Card accent="#4ADE80">
             <Pill color="#4ADE80">Phase 1 · Photosynthesis</Pill>
-            <p style={{ margin: '16px 0 8px', fontSize: 22, fontWeight: 800, color: theme.text, fontFamily: 'Georgia, serif' }}>
+            <p style={{ margin: '16px 0 8px', fontSize: 19, fontWeight: 600, color: theme.text, fontFamily: theme.fontMono, letterSpacing: '-0.01em' }}>
               CO₂ + H₂O + Light → C₆H₁₂O₆ + O₂
             </p>
             <p style={{ margin: 0, fontSize: 14, color: theme.textMuted, lineHeight: 1.6 }}>
@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
           </Card>
           <Card accent="#F59E0B">
             <Pill color="#F59E0B">Phase 2 · Fermentation</Pill>
-            <p style={{ margin: '16px 0 8px', fontSize: 22, fontWeight: 800, color: theme.text, fontFamily: 'Georgia, serif' }}>
+            <p style={{ margin: '16px 0 8px', fontSize: 19, fontWeight: 600, color: theme.text, fontFamily: theme.fontMono, letterSpacing: '-0.01em' }}>
               C₆H₁₂O₆ → 2 C₂H₅OH + 2 CO₂
             </p>
             <p style={{ margin: 0, fontSize: 14, color: theme.textMuted, lineHeight: 1.6 }}>
@@ -118,7 +118,7 @@ export default function HowItWorksPage() {
                 borderRadius: 14, padding: '22px 24px', boxShadow: theme.shadow,
               }}
             >
-              <span style={{ fontSize: 30, fontWeight: 900, color: s.color, letterSpacing: '-0.04em', lineHeight: 1, flexShrink: 0 }}>{s.n}</span>
+              <span style={{ fontFamily: theme.fontDisplay, fontSize: 34, fontWeight: 600, color: s.color, letterSpacing: '-0.03em', lineHeight: 1, flexShrink: 0 }}>{s.n}</span>
               <div style={{ flex: 1 }}>
                 <p style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: theme.text }}>{s.title}</p>
                 <p style={{ margin: '0 0 12px', fontSize: 14, color: theme.textMuted, lineHeight: 1.6 }}>{s.body}</p>
@@ -192,7 +192,7 @@ export default function HowItWorksPage() {
             whileHover={{ scale: 1.04, boxShadow: `0 0 32px ${theme.accentGlow}` }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/simulation')}
-            style={{ background: theme.accent, color: theme.accentText, border: 'none', borderRadius: 10, padding: '14px 30px', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+            style={{ background: theme.accent, color: theme.accentText, border: 'none', borderRadius: 12, padding: '15px 30px', fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}
           >
             Launch the Simulator
           </motion.button>

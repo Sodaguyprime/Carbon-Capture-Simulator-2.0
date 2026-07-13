@@ -1,111 +1,83 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
+import { Spark } from './FeaturesSection'
+
+const HERO_IMG = '/ChatGPT Image Jun 13, 2026, 07_25_11 AM.png'
 
 export default function CTASection() {
   const { theme } = useTheme()
+  const navigate = useNavigate()
 
   return (
-    <section style={{
-      padding: '100px 24px 120px',
-      background: theme.bgSecondary,
-    }}>
-      <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+    <section style={{ padding: '96px 24px 120px', background: theme.bgSecondary }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            background: theme.bgCard,
-            border: `1px solid ${theme.border}`,
-            borderRadius: 24,
-            padding: 'clamp(40px, 6vw, 72px) clamp(28px, 5vw, 64px)',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: theme.shadowLg,
+            position: 'relative', overflow: 'hidden', borderRadius: 26,
+            padding: 'clamp(44px, 6vw, 80px) clamp(28px, 5vw, 68px)',
+            background: theme.bgInk, border: `1px solid ${theme.borderStrong}`,
+            boxShadow: theme.shadowLg, textAlign: 'center',
           }}
         >
-          {/* Glow inside card */}
-          <div style={{
-            position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)',
-            width: 400, height: 200,
-            background: `radial-gradient(ellipse, ${theme.accentGlow} 0%, transparent 70%)`,
-            pointerEvents: 'none',
+          {/* low-key background image + scrim */}
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0,
+            background: `#0a120d url("${HERO_IMG}") center 40%/cover no-repeat`,
+            opacity: 0.22, filter: 'saturate(1.1)',
+            maskImage: 'radial-gradient(ellipse 80% 90% at 50% 0%, #000, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 90% at 50% 0%, #000, transparent 80%)',
+          }} />
+          <div aria-hidden style={{
+            position: 'absolute', top: '-40%', left: '50%', transform: 'translateX(-50%)',
+            width: 520, height: 360, background: `radial-gradient(ellipse, ${theme.accent}33 0%, transparent 68%)`, pointerEvents: 'none',
           }} />
 
-          <span style={{
-            display: 'inline-block',
-            background: theme.accentGlow,
-            color: theme.accent,
-            border: `1px solid ${theme.accent}`,
-            borderRadius: 999,
-            padding: '4px 14px',
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            marginBottom: 20,
-          }}>
-            Get Started Today
-          </span>
+          <div style={{ position: 'relative' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: theme.accent }}>
+              <Spark /> Run your own numbers
+            </span>
+            <h2 style={{
+              fontFamily: theme.fontDisplay, fontSize: 'clamp(30px, 4.6vw, 52px)', fontWeight: 500,
+              color: '#F2F7F2', letterSpacing: '-0.02em', margin: '18px 0 18px', lineHeight: 1.08,
+            }}>
+              Ready to simulate the path<br />from <em style={{ fontStyle: 'italic', color: theme.accent }}>CO₂ to fuel?</em>
+            </h2>
+            <p style={{ fontSize: 16.5, color: '#AEC0B4', lineHeight: 1.7, margin: '0 auto 38px', maxWidth: 480 }}>
+              Set your initial conditions, run the kinetic engine, and watch biomass,
+              glucose, ethanol and CO₂ evolve in real time — free, in the browser.
+            </p>
 
-          <h2 style={{
-            fontSize: 'clamp(26px, 4vw, 44px)',
-            fontWeight: 800,
-            color: theme.text,
-            letterSpacing: '-0.03em',
-            margin: '0 0 16px',
-            lineHeight: 1.1,
-          }}>
-            Ready to simulate<br />the path to net zero?
-          </h2>
-
-          <p style={{
-            fontSize: 16,
-            color: theme.textMuted,
-            lineHeight: 1.7,
-            margin: '0 0 36px',
-            maxWidth: 460,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}>
-            Join thousands of researchers using CarbonCap to model,
-            test, and validate carbon removal strategies — for free.
-          </p>
-
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <motion.button
-              whileHover={{ scale: 1.04, boxShadow: `0 0 32px ${theme.accentGlow}` }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: theme.accent,
-                color: theme.accentText,
-                border: 'none',
-                borderRadius: 10,
-                padding: '14px 32px',
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: 'pointer',
-                letterSpacing: '-0.01em',
-              }}>
-              Launch the Simulator
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.03, borderColor: theme.accent, color: theme.accent }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: 'transparent',
-                color: theme.textMuted,
-                border: `1.5px solid ${theme.border}`,
-                borderRadius: 10,
-                padding: '14px 28px',
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'border-color 0.2s, color 0.2s',
-              }}>
-              Read the Docs
-            </motion.button>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <motion.button
+                whileHover={{ y: -2, boxShadow: `0 16px 44px -8px ${theme.accentGlow}` }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate('/simulation')}
+                style={{
+                  background: theme.accent, color: theme.accentText, border: 'none', borderRadius: 12,
+                  padding: '15px 30px', fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600,
+                  letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+                  boxShadow: `0 10px 34px -8px ${theme.accentGlow}`,
+                }}>
+                Launch the Simulator
+              </motion.button>
+              <motion.button
+                whileHover={{ y: -2, borderColor: theme.accent, color: theme.accent }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate('/how-it-works')}
+                style={{
+                  background: 'transparent', color: '#CFDDD3', border: '1px solid rgba(207,221,211,0.28)',
+                  borderRadius: 12, padding: '15px 28px', fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600,
+                  letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+                  transition: 'border-color 0.2s, color 0.2s',
+                }}>
+                How It Works
+              </motion.button>
+            </div>
           </div>
         </motion.div>
       </div>

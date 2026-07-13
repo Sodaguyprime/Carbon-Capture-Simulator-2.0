@@ -96,7 +96,7 @@ export default function LoadingScreen({ theme, onDone, duration = 2600 }) {
       </div>
 
       <p style={{
-        margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
+        margin: 0, fontFamily: theme.fontMono, fontSize: 11, fontWeight: 600, letterSpacing: '0.16em',
         textTransform: 'uppercase', color: theme.accent,
       }}>
         Running Simulation
@@ -135,10 +135,10 @@ export default function LoadingScreen({ theme, onDone, duration = 2600 }) {
         </div>
         <div style={{
           display: 'flex', justifyContent: 'space-between', marginTop: 10,
-          fontSize: 12, color: theme.textMuted, fontWeight: 600,
+          fontFamily: theme.fontMono, fontSize: 12, color: theme.textMuted, fontWeight: 500, letterSpacing: '0.03em',
         }}>
           <span>{`Stage ${stageIdx + 1} / ${STAGES.length}`}</span>
-          <span style={{ color: theme.accent, fontWeight: 800 }}>{Math.round(progress)}%</span>
+          <span style={{ color: theme.accent, fontWeight: 600 }}>{Math.round(progress)}%</span>
         </div>
       </div>
     </motion.div>

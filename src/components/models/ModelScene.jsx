@@ -45,8 +45,8 @@ export default function ModelScene({ modelPath, autoRotate }) {
       {/* Lighting */}
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 8, 5]} intensity={1.4} castShadow />
-      <directionalLight position={[-4, 2, -4]} intensity={0.5} color="#33D17A" />
-      <pointLight position={[0, 6, 0]} intensity={0.8} color="#33D17A" />
+      <directionalLight position={[-4, 2, -4]} intensity={0.5} color="#3ECF7F" />
+      <pointLight position={[0, 6, 0]} intensity={0.8} color="#3ECF7F" />
 
       {/* Environment */}
       <Environment preset="city" />
@@ -61,7 +61,7 @@ export default function ModelScene({ modelPath, autoRotate }) {
         scale={10}
         blur={2.5}
         far={4}
-        color="#33D17A"
+        color="#3ECF7F"
       />
 
       {/* Controls */}
@@ -77,7 +77,7 @@ export default function ModelScene({ modelPath, autoRotate }) {
   )
 }
 
-// Pre-load all three models
-useGLTF.preload('/models/Fermentor.glb')
-useGLTF.preload('/models/Middlepart.glb')
-useGLTF.preload('/models/3rd_part.glb')
+// Pre-load all three reactor models (the new high-detail set)
+useGLTF.preload('/models/PhotoBioreactor_new.glb')
+useGLTF.preload('/models/Airlift_new.glb')
+useGLTF.preload('/models/Stir%20Tank%20Fermentor_new.glb')

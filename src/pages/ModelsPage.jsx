@@ -10,32 +10,32 @@ import { PageHero, Section, SectionLabel, Heading, Lead, Pill } from '../compone
 // .glb preloaded by ModelScene. Sides alternate: right, left, right.
 const MODELS = [
   {
-    model: '/models/Fermentor.glb',
-    label: 'Unit 01 · Bioreactor',
+    model: '/models/PhotoBioreactor_new.glb',
+    label: 'Unit 01 · Capture',
     title: 'Photochemical Bioreactor',
     accent: '#4ADE80',
     description:
-      'The airlift acrylic-glass vessel where Chlorella vulgaris fixes captured CO₂ into glucose under full-spectrum LED light. Drag to orbit the reactor, or let it turn on its own.',
-    tags: ['CO₂ → Glucose', 'Airlift mixing', 'Full-spectrum LED'],
+      'The acrylic-glass vessel where Chlorella vulgaris fixes captured CO₂ into glucose under full-spectrum LED light — the carbon-capture heart of the loop. Drag to orbit, or let it turn on its own.',
+    tags: ['CO₂ → Glucose', 'Chlorella vulgaris', 'Full-spectrum LED'],
     side: 'right',
   },
   {
-    model: '/models/Middlepart.glb',
-    label: 'Unit 02 · Separation',
-    title: 'Centrifuge & Transfer Module',
+    model: '/models/Airlift_new.glb',
+    label: 'Unit 02 · Circulation',
+    title: 'Airlift Circulation Column',
     accent: '#22D3EE',
     description:
-      'A disc-stack centrifuge clarifies the algal broth and hands a glucose-rich, biomass-free stream to the fermenter. It ties the upstream and downstream halves of the loop together.',
-    tags: ['Biomass removal', '5–15 g/L glucose', 'Heat-sterilized'],
+      'A gas-lift column that keeps the culture suspended and drives CO₂ dissolution without mechanical shear — sparged air rises and circulates the broth between the reactor and downstream stages.',
+    tags: ['Gas-lift mixing', '0.5–1.5 vvm', 'Low-shear'],
     side: 'left',
   },
   {
-    model: '/models/3rd_part.glb',
+    model: '/models/Stir%20Tank%20Fermentor_new.glb',
     label: 'Unit 03 · Recovery',
-    title: 'Fermenter & Distillation Column',
+    title: 'Stirred-Tank Fermenter',
     accent: '#F59E0B',
     description:
-      'Saccharomyces cerevisiae ferments the sugar into bioethanol, which is distilled and membrane-dehydrated to ~99% purity. The released CO₂ is scrubbed and re-injected upstream.',
+      'Saccharomyces cerevisiae ferments the glucose into bioethanol under Rushton-turbine agitation; the product is distilled and membrane-dehydrated to ~99%, and the released CO₂ is scrubbed and re-injected upstream.',
     tags: ['Glucose → Ethanol', '~99% purity', 'CO₂ recycle'],
     side: 'right',
   },
@@ -69,12 +69,13 @@ function ModelShowcase({ data }) {
       transition={{ duration: 0.6 }}
       className="cc-model-stage"
     >
+      <span className="cc-stage-tag">{data.label}</span>
       {/* Soft accent glow so the transparent model has presence */}
       <div
         aria-hidden
         style={{
           position: 'absolute', inset: '10% 8%',
-          background: `radial-gradient(ellipse at center, ${data.accent}26 0%, transparent 68%)`,
+          background: `radial-gradient(ellipse at center, ${data.accent}2E 0%, transparent 68%)`,
           filter: 'blur(6px)', pointerEvents: 'none',
         }}
       />
@@ -102,6 +103,17 @@ export default function ModelsPage() {
     .cc-model-stage{
       position:relative; width:100%; height:460px;
       border-radius:24px; overflow:hidden;
+      border:1px solid ${theme.border};
+      background:
+        linear-gradient(${theme.gridLine} 1px, transparent 1px) 0 0/28px 28px,
+        linear-gradient(90deg, ${theme.gridLine} 1px, transparent 1px) 0 0/28px 28px,
+        ${theme.bgCard};
+      box-shadow:${theme.shadow};
+    }
+    .cc-stage-tag{
+      position:absolute; z-index:3; left:16px; top:14px;
+      font-family:${theme.fontMono}; font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+      color:${theme.textMuted}; pointer-events:none;
     }
     /* On narrow screens the visual always sits above its text, regardless of side */
     @media (max-width:840px){
@@ -149,7 +161,7 @@ export default function ModelsPage() {
             whileHover={{ scale: 1.04, boxShadow: `0 0 32px ${theme.accentGlow}` }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/simulation')}
-            style={{ background: theme.accent, color: theme.accentText, border: 'none', borderRadius: 10, padding: '14px 30px', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+            style={{ background: theme.accent, color: theme.accentText, border: 'none', borderRadius: 12, padding: '15px 30px', fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}
           >
             Launch the Simulator
           </motion.button>

@@ -266,8 +266,8 @@ function InputCard({ config, value, onChange, theme, index }) {
               color: theme.text,
               outline: 'none',
               textAlign: 'center',
-              letterSpacing: '-0.04em',
-              fontFamily: 'inherit',
+              letterSpacing: '-0.03em',
+              fontFamily: theme.fontMono,
             }}
           />
           <div style={{
@@ -342,7 +342,7 @@ function SummaryPanel({ values, theme, onRun, onReset }) {
             background: theme.accent,
             boxShadow: `0 0 8px ${theme.accent}`,
           }} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: theme.accent, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: theme.fontMono, fontSize: 11, fontWeight: 600, color: theme.accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Configuration Summary
           </span>
         </div>
@@ -405,7 +405,7 @@ function SummaryPanel({ values, theme, onRun, onReset }) {
 
               {/* Value */}
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <span style={{ fontSize: 16, fontWeight: 800, color: theme.text, letterSpacing: '-0.03em' }}>
+                <span style={{ fontFamily: theme.fontMono, fontSize: 16, fontWeight: 600, color: theme.text, letterSpacing: '-0.02em' }}>
                   {values[cfg.id]}
                 </span>
                 <span style={{ fontSize: 10, color: theme.textMuted, marginLeft: 3 }}>
@@ -430,10 +430,10 @@ function SummaryPanel({ values, theme, onRun, onReset }) {
             color: theme.accentText,
             border: 'none',
             borderRadius: 12,
-            padding: '15px 24px',
-            fontSize: 15, fontWeight: 700,
+            padding: '16px 24px',
+            fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600,
             cursor: 'pointer',
-            letterSpacing: '-0.01em',
+            letterSpacing: '0.08em', textTransform: 'uppercase',
             boxShadow: `0 4px 20px ${theme.accentGlow}`,
             transition: 'box-shadow 0.2s',
           }}
@@ -534,20 +534,21 @@ export default function SimulationPage() {
               background: theme.accent, display: 'inline-block',
               boxShadow: `0 0 6px ${theme.accent}`,
             }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: theme.accent, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <span style={{ fontFamily: theme.fontMono, fontSize: 11, fontWeight: 600, color: theme.accent, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Step 1 of 3 · Initial Conditions
             </span>
           </div>
 
           <h1 style={{
             margin: 0,
-            fontSize: 'clamp(26px, 3.5vw, 38px)',
-            fontWeight: 800,
+            fontFamily: theme.fontDisplay,
+            fontSize: 'clamp(30px, 4vw, 46px)',
+            fontWeight: 500,
             color: theme.text,
-            letterSpacing: '-0.035em',
-            lineHeight: 1.1,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.08,
           }}>
-            Configure Your Simulation
+            Configure your <em style={{ fontStyle: 'italic', color: theme.accent }}>simulation</em>
           </h1>
           <p style={{
             margin: '10px 0 0',

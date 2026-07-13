@@ -2,292 +2,258 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
 
-// Full-bleed hero image. Quoted in url() so the spaces/commas in the
-// filename are handled safely. Lives in /public, served from root by Vite.
+// Assets served from /public
 const HERO_IMG = '/ChatGPT Image Jun 13, 2026, 07_25_11 AM.png'
 const LOGO_IMG = '/Icons/Logo.png'
 const ALGAE_IMG = '/Icons/Algae.png'
 const FERMENTOR_IMG = '/Icons/Fermentor.png'
 
-function Arrow({ size = 22, color = '#fff', width = 1.8 }) {
+function Arrow({ size = 16, w = 1.8 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d="M7 17L17 7M17 7H9M17 7V15" stroke={color} strokeWidth={width}
+      <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" strokeWidth={w}
         strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
+const ease = [0.22, 1, 0.36, 1]
+
 export default function HeroSection() {
-  const { theme } = useTheme()
+  const { theme, mode } = useTheme()
   const navigate = useNavigate()
-  const accent = theme.accent
 
-  // Scoped CSS — the studio-card layout (white card on steel backdrop),
-  // absolute topbar, seam badge keyframes + textPath, media queries and
-  // reduced-motion, none of which inline styles can express.
+  // Theme-aware scoped CSS. Layout, the rotating seam badge, duotone image
+  // treatment, media queries and reduced-motion can't be expressed inline.
   const css = `
-    .cc-wrap{
-      --ink:#14181a; --card:#ffffff; --muted:#93999a; --line:#eaecec;
-      --accent:${accent}; --radius:30px;
-      position:relative; min-height:100vh; width:100%;
-      display:flex; align-items:center; justify-content:center;
-      padding:64px 32px;
-      background:radial-gradient(120% 90% at 80% 0%, #3a4a4c 0%, #1e2829 45%, #0d1213 100%);
+    .hero{
+      --ink:${theme.text}; --muted:${theme.textMuted};
+      --card:${theme.bgCard}; --line:${theme.border};
+      --accent:${theme.accent}; --accent2:${theme.accent2};
+      --glow:${theme.accentGlow}; --mono:${theme.fontMono}; --disp:${theme.fontDisplay};
+      position:relative; overflow:hidden; width:100%; min-height:100vh;
+      display:flex; align-items:center; padding:120px 32px 72px; background:${theme.bg};
+    }
+    /* low-key full-bleed background image, duotone + heavy scrim */
+    .hero-bg{
+      position:absolute; inset:0; pointer-events:none;
+      background:#0d1512 url("${HERO_IMG}") center 30%/cover no-repeat;
+      opacity:${mode === 'dark' ? 0.16 : 0.1}; filter:grayscale(0.3) saturate(1.2);
+      mask-image:linear-gradient(90deg, #000 0%, transparent 78%);
+      -webkit-mask-image:linear-gradient(90deg, #000 0%, transparent 78%);
+    }
+    .hero-grid{
+      position:absolute; inset:0; pointer-events:none;
+      background-image:linear-gradient(${theme.gridLine} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLine} 1px, transparent 1px);
+      background-size:34px 34px;
+      mask-image:radial-gradient(ellipse 90% 80% at 30% 40%, #000 20%, transparent 80%);
+      -webkit-mask-image:radial-gradient(ellipse 90% 80% at 30% 40%, #000 20%, transparent 80%);
+    }
+    .hero-bloom{
+      position:absolute; top:-10%; right:-6%; width:760px; height:620px; pointer-events:none;
+      background:radial-gradient(ellipse at center, var(--glow) 0%, transparent 66%); filter:blur(6px);
     }
 
-    .cc-card{
-      position:relative; width:100%; max-width:980px;
-      background:var(--card); border-radius:var(--radius); padding:18px;
-      box-shadow:0 60px 120px -30px rgba(0,0,0,.6);
+    .hero-inner{
+      position:relative; z-index:2; width:100%; max-width:1200px; margin:0 auto;
+      display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center;
     }
 
-    /* Top bar — absolute, overlaps the image's top corners */
-    .cc-topbar{
-      position:absolute; top:34px; left:34px; right:34px; z-index:5;
-      display:flex; align-items:center; justify-content:space-between;
+    .hero-eyebrow{
+      display:inline-flex; align-items:center; gap:10px; margin-bottom:26px;
+      font-family:var(--mono); font-size:12px; font-weight:500; letter-spacing:0.18em;
+      text-transform:uppercase; color:var(--muted);
     }
-    .cc-logo{
-      width:54px; height:54px; border-radius:16px; background:var(--ink);
-      border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    }
-    .cc-logo:focus-visible{ outline:3px solid var(--accent); outline-offset:3px; }
+    .hero-eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent);
+      box-shadow:0 0 12px var(--accent); }
+    .hero-eyebrow .rule{ width:38px; height:1px; background:var(--line); }
 
-    /* Hero image stage — full-bleed across the card, anchors the badge */
-    .cc-stage{ position:relative; margin:-18px -18px 0; }
-    .cc-hero-img{
-      width:100%; height:320px; border-radius:var(--radius) var(--radius) 0 0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.14)),
-        #b9c3c4 url("${HERO_IMG}") center 40%/cover no-repeat;
+    .hero-h1{
+      font-family:var(--disp); font-optical-sizing:auto;
+      font-weight:500; font-size:clamp(44px, 6.2vw, 82px); line-height:0.98;
+      letter-spacing:-0.025em; color:var(--ink); margin:0;
+    }
+    .hero-h1 em{ font-style:italic; font-weight:500; color:var(--accent); }
+    .hero-sub{
+      font-size:clamp(15px,1.5vw,18px); line-height:1.7; color:var(--muted);
+      max-width:440px; margin:26px 0 0;
     }
 
-    /* Rotating badge straddling the image / content seam */
-    .cc-badge{
-      position:absolute; left:46%; bottom:-46px; transform:translateX(-50%);
-      width:96px; height:96px; border-radius:50%; cursor:pointer;
-      background:var(--ink); z-index:6; box-shadow:0 0 0 6px var(--card);
-      display:flex; align-items:center; justify-content:center;
+    .hero-cta{ display:flex; flex-wrap:wrap; gap:14px; margin-top:34px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+      font-family:var(--mono); font-size:12px; font-weight:600; letter-spacing:0.08em;
+      text-transform:uppercase; border-radius:12px; padding:15px 24px;
+      transition:transform .2s, box-shadow .2s, background .2s, color .2s, border-color .2s;
     }
-    .cc-badge:focus-visible{ outline:3px solid var(--accent); outline-offset:4px; }
-    .cc-badge .ring{ position:absolute; inset:0; animation:cc-spin 14s linear infinite; }
-    .cc-badge .logo{
-      position:relative; z-index:2; width:54px; height:54px; border-radius:50%;
-      object-fit:cover; display:block; pointer-events:none;
+    .btn-primary{ background:var(--accent); color:${theme.accentText}; border:1px solid var(--accent);
+      box-shadow:0 10px 34px -8px var(--glow); }
+    .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 44px -8px var(--glow); }
+    .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+    .btn-ghost:hover{ transform:translateY(-2px); border-color:var(--accent); color:var(--accent); }
+    .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+    /* instrument spec strip */
+    .hero-specs{ display:flex; gap:0; margin-top:44px; border-top:1px solid var(--line);
+      max-width:480px; }
+    .spec{ flex:1; padding:16px 4px 0; }
+    .spec .k{ font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--muted); }
+    .spec .v{ font-family:var(--disp); font-size:22px; font-weight:500; color:var(--ink); margin-top:4px;
+      letter-spacing:-0.01em; }
+    .spec .v small{ font-family:var(--mono); font-size:11px; color:var(--accent); font-weight:500; }
+
+    /* right visual */
+    .hero-visual{ position:relative; }
+    .hero-frame{
+      position:relative; border-radius:24px; overflow:hidden; aspect-ratio:4/5;
+      border:1px solid var(--line);
+      background:#101a15 url("${HERO_IMG}") center/cover no-repeat;
+      box-shadow:${theme.shadowLg};
     }
-    .cc-badge text{ fill:#fff; font-size:8.2px; font-weight:600; letter-spacing:1.5px; }
+    .hero-frame::after{ content:""; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(6,12,9,0.15) 0%, rgba(6,12,9,0.72) 100%); }
+    .hero-frame .tag{ position:absolute; z-index:2; left:16px; bottom:16px;
+      font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#eafff2; }
+    .hero-frame .corner{ position:absolute; z-index:2; top:14px; left:14px;
+      font-family:var(--mono); font-size:10px; letter-spacing:0.14em; color:rgba(234,255,242,0.75); }
+
+    /* rotating seam badge */
+    .hero-badge{
+      position:absolute; z-index:6; right:-22px; top:-22px;
+      width:104px; height:104px; border-radius:50%; cursor:pointer;
+      background:${theme.bgInk}; box-shadow:0 0 0 6px ${theme.bg}, ${theme.shadowLg};
+      display:flex; align-items:center; justify-content:center; border:none;
+    }
+    .hero-badge .ring{ position:absolute; inset:0; animation:cc-spin 16s linear infinite; }
+    .hero-badge .ring text{ fill:#eafff2; font-family:var(--mono); font-size:8px; font-weight:500; letter-spacing:2px; }
+    .hero-badge .logo{ position:relative; z-index:2; width:52px; height:52px; border-radius:50%;
+      object-fit:cover; }
+    .hero-badge:focus-visible{ outline:3px solid var(--accent); outline-offset:4px; }
     @keyframes cc-spin{ to{ transform:rotate(360deg); } }
 
-    /* Lower grid */
-    .cc-lower{
-      display:grid; grid-template-columns:1.18fr .92fr; gap:18px; margin-top:18px;
+    .hero-mini{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .mini{
+      position:relative; overflow:hidden; border-radius:14px; min-height:96px; cursor:pointer;
+      border:1px solid var(--line); padding:12px; text-align:left; width:100%;
+      display:flex; flex-direction:column; justify-content:flex-end;
+      background:#131d18 center/cover no-repeat; transition:transform .2s, border-color .2s;
     }
-    .cc-h1{
-      font-weight:800; font-size:clamp(30px,4.2vw,46px); line-height:1.02;
-      letter-spacing:-.02em; color:var(--ink); margin:0;
-    }
-    .cc-sub{
-      font-weight:500; font-size:13px; line-height:1.55; color:var(--muted);
-      max-width:320px; margin:14px 0 0;
-    }
+    .mini.algae{ background-image:linear-gradient(180deg, rgba(8,16,11,.2), rgba(8,16,11,.82)), url("${ALGAE_IMG}"); }
+    .mini.ferm{ background-image:linear-gradient(180deg, rgba(8,16,11,.2), rgba(8,16,11,.82)), url("${FERMENTOR_IMG}"); }
+    .mini:hover{ transform:translateY(-3px); border-color:var(--accent); }
+    .mini .n{ position:relative; z-index:2; color:#eafff2; font-size:13px; font-weight:700; }
+    .mini .m{ position:relative; z-index:2; font-family:var(--mono); font-size:10px; color:rgba(234,255,242,0.72);
+      letter-spacing:0.04em; margin-top:2px; }
+    .mini:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
-    .cc-actions{ display:flex; align-items:flex-end; gap:22px; margin-top:30px; }
-    .cc-cta-col{ display:flex; flex-direction:column; gap:20px; }
-    .cc-cta{
-      background:var(--ink); color:#fff; border:none; border-radius:30px;
-      padding:14px 26px; font-weight:600; font-size:11px; letter-spacing:1.2px;
-      text-transform:uppercase; cursor:pointer; transition:background .2s, color .2s, transform .2s;
-      align-self:flex-start;
+    @media (max-width:900px){
+      .hero{ padding:110px 22px 56px; }
+      .hero-inner{ grid-template-columns:1fr; gap:40px; }
+      .hero-bg{ mask-image:linear-gradient(180deg,#000,transparent 90%); -webkit-mask-image:linear-gradient(180deg,#000,transparent 90%); }
+      .hero-frame{ aspect-ratio:16/10; }
     }
-    .cc-cta:hover{ background:var(--accent); color:#08120c; transform:translateY(-1px); }
-    .cc-cta:focus-visible{ outline:3px solid var(--accent); outline-offset:3px; }
-
-    .cc-socials{ display:flex; gap:10px; }
-    .cc-soc{
-      width:36px; height:36px; border-radius:50%; cursor:pointer;
-      border:1px solid var(--line); background:#fff; color:var(--muted);
-      display:flex; align-items:center; justify-content:center;
-      transition:background .2s, color .2s, border-color .2s;
+    @media (max-width:460px){
+      .hero-specs{ flex-wrap:wrap; }
+      .spec{ flex:1 0 45%; }
     }
-    .cc-soc:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
-    .cc-soc:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-
-    .cc-thumbs{ display:flex; gap:10px; }
-    .cc-thumb{
-      position:relative; width:90px; height:118px; border-radius:14px; cursor:pointer;
-      overflow:hidden; border:none; padding:0; flex:0 0 auto;
-      background:#1c2526; background-size:cover; background-position:center;
-      transition:transform .2s;
-    }
-    .cc-thumb:hover{ transform:translateY(-2px); }
-    .cc-thumb:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-    .cc-thumb::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.55));
-    }
-    .cc-thumb span{
-      position:absolute; left:8px; bottom:8px; z-index:2;
-      color:#fff; font-size:11px; font-weight:600; letter-spacing:.2px;
-    }
-    .cc-t1{ background-image:linear-gradient(150deg, #243a36, #11201d); }
-    .cc-t2{ background-image:linear-gradient(150deg, #2a3637, #131b1c); }
-    .cc-t3{ background-image:linear-gradient(150deg, #1f2e33, #0e1518); }
-
-    /* Right column — site / model cards */
-    .cc-projects{ display:flex; flex-direction:column; gap:14px; }
-    .cc-pcard{
-      position:relative; border-radius:18px; overflow:hidden; min-height:118px;
-      flex:1; padding:16px; cursor:pointer; border:none; text-align:left; width:100%;
-      display:flex; align-items:flex-end;
-      background:#1c2526 center/cover no-repeat;
-      transition:transform .2s;
-    }
-    .cc-algae{ background-image:url("${ALGAE_IMG}"); }
-    .cc-fermentor{ background-image:url("${FERMENTOR_IMG}"); }
-    .cc-pcard:hover{ transform:translateY(-2px); }
-    .cc-pcard:focus-visible{ outline:3px solid var(--accent); outline-offset:3px; }
-    .cc-pcard::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55));
-    }
-    .cc-name{ position:relative; z-index:2; color:#fff; font-size:13px; font-weight:600; }
-    .cc-view{
-      position:absolute; top:16px; right:18px; z-index:2; color:#fff; font-size:11px;
-      font-weight:600; display:flex; align-items:center; gap:4px;
-    }
-    .cc-metric{
-      position:absolute; bottom:14px; right:16px; z-index:2; color:#fff;
-      font-size:10px; font-weight:600; opacity:.9;
-    }
-
-    @media (max-width:760px){
-      .cc-lower{ grid-template-columns:1fr; gap:24px; }
-      .cc-actions{ flex-wrap:wrap; }
-      .cc-hero-img{ height:230px; }
-      .cc-badge{ left:auto; right:24px; transform:none; }
-    }
-    @media (prefers-reduced-motion:reduce){ .cc-badge .ring{ animation:none; } }
+    @media (prefers-reduced-motion:reduce){ .hero-badge .ring{ animation:none; } }
   `
 
+  const specs = [
+    { k: 'Reaction', v: <>CO₂→<small>C₂H₅OH</small></> },
+    { k: 'Organisms', v: <>2 <small>strains</small></> },
+    { k: 'Ethanol', v: <>99<small>% pure</small></> },
+  ]
+
   return (
-    <section className="cc-wrap">
+    <section className="hero">
       <style>{css}</style>
+      <div className="hero-bg" aria-hidden />
+      <div className="hero-grid" aria-hidden />
+      <div className="hero-bloom" aria-hidden />
 
-      <motion.div className="cc-card"
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}>
+      <div className="hero-inner">
+        {/* Left — editorial copy */}
+        <div>
+          <motion.div className="hero-eyebrow"
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}>
+            <span className="dot" /> CO₂ → Bioethanol <span className="rule" /> Interactive Simulator
+          </motion.div>
 
-        {/* Top bar overlapping the image corners */}
-        <div className="cc-topbar">
-          <button className="cc-logo" aria-label="Home" type="button"
-            onClick={() => navigate('/')}>
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M5 16.5L11.5 3.5V11L17 5.5L10.5 18.5V11L5 16.5Z" fill="#fff" />
-            </svg>
-          </button>
+          <motion.h1 className="hero-h1"
+            initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.06, ease }}>
+            Model the future<br />of <em>carbon capture</em>
+          </motion.h1>
+
+          <motion.p className="hero-sub"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.16, ease }}>
+            An interactive simulator that turns captured CO₂ into bioethanol through
+            algae and yeast — explore, tune, and optimize the whole bioprocess at any scale.
+          </motion.p>
+
+          <motion.div className="hero-cta"
+            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.24, ease }}>
+            <button className="btn btn-primary" onClick={() => navigate('/simulation')}>
+              Launch Simulator <Arrow size={15} w={2} />
+            </button>
+            <button className="btn btn-ghost" onClick={() => navigate('/models')}>
+              Explore Models
+            </button>
+          </motion.div>
+
+          <motion.div className="hero-specs"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.4 }}>
+            {specs.map(s => (
+              <div className="spec" key={s.k}>
+                <div className="k">{s.k}</div>
+                <div className="v">{s.v}</div>
+              </div>
+            ))}
+          </motion.div>
         </div>
 
-        {/* Hero image + seam badge */}
-        <div className="cc-stage">
-          <div className="cc-hero-img" role="img"
-            aria-label="Carbon capture and bioethanol simulation reactor" />
+        {/* Right — framed visual + rotating badge + model shortcuts */}
+        <motion.div className="hero-visual"
+          initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.3, ease }}>
+          <div className="hero-frame">
+            <span className="corner">FIG.01 · REACTOR ARRAY</span>
+            <span className="tag">Closed-loop carbon system</span>
+          </div>
 
-          <div className="cc-badge" role="button" tabIndex={0}
+          <div className="hero-badge" role="button" tabIndex={0}
             aria-label="Explore the simulator"
             onClick={() => navigate('/simulation')}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/simulation') }}>
-            <svg className="ring" viewBox="0 0 96 96">
+            <svg className="ring" viewBox="0 0 104 104">
               <defs>
-                <path id="ccCirclePath"
-                  d="M48,48 m-34,0 a34,34 0 1,1 68,0 a34,34 0 1,1 -68,0" />
+                <path id="ccCirclePath" d="M52,52 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" />
               </defs>
               <text>
                 <textPath href="#ccCirclePath">
                   EXPLORE THE SIM
-                  <tspan fill={accent}> · </tspan>
+                  <tspan fill={theme.accent}> · </tspan>
                   EXPLORE THE SIM
-                  <tspan fill={accent}> · </tspan>
+                  <tspan fill={theme.accent}> · </tspan>
                 </textPath>
               </text>
             </svg>
             <img className="logo" src={LOGO_IMG} alt="" aria-hidden="true" />
           </div>
-        </div>
 
-        {/* Lower grid */}
-        <div className="cc-lower">
-          {/* Left column */}
-          <div>
-            <div className="cc-intro">
-              <h1 className="cc-h1">
-                Model the future of<br />carbon capture
-              </h1>
-              <p className="cc-sub">
-                An interactive simulator that turns captured CO<sub>2</sub> into
-                bioethanol through algae and yeast — explore, tune, and optimize
-                the whole process at any scale.
-              </p>
-            </div>
-
-            <div className="cc-actions">
-              <div className="cc-cta-col">
-                <button className="cc-cta" onClick={() => navigate('/simulation')}>
-                  Launch Simulator
-                </button>
-                <div className="cc-socials">
-                  <button className="cc-soc" aria-label="LinkedIn" type="button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM0 8h5v16H0V8zm7.5 0h4.78v2.2h.07c.67-1.2 2.3-2.47 4.73-2.47C22 7.73 24 10.1 24 14.6V24h-5v-8.3c0-2-.04-4.5-2.75-4.5-2.75 0-3.17 2.13-3.17 4.35V24h-5V8z" />
-                    </svg>
-                  </button>
-                  <button className="cc-soc" aria-label="X" type="button">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.46l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.49 3.24H4.3L17.61 20.65z" />
-                    </svg>
-                  </button>
-                  <button className="cc-soc" aria-label="YouTube" type="button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.5 6.5a3 3 0 0 0-2.1-2.1C19.5 3.9 12 3.9 12 3.9s-7.5 0-9.4.5A3 3 0 0 0 .5 6.5 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.5 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.5zM9.6 15.5v-7l6.3 3.5-6.3 3.5z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <div className="cc-thumbs">
-                <button className="cc-thumb cc-t1" type="button" aria-label="Capture"
-                  onClick={() => navigate('/simulation')}>
-                  <span>Capture</span>
-                </button>
-                <button className="cc-thumb cc-t2" type="button" aria-label="Convert"
-                  onClick={() => navigate('/simulation')}>
-                  <span>Convert</span>
-                </button>
-                <button className="cc-thumb cc-t3" type="button" aria-label="Monitor"
-                  onClick={() => navigate('/simulation')}>
-                  <span>Monitor</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Right column — model cards */}
-          <div className="cc-projects">
-            <button className="cc-pcard cc-algae" type="button" aria-label="Algae Bioreactor model"
-              onClick={() => navigate('/models')}>
-              <span className="cc-name">Algae Bioreactor</span>
-              <span className="cc-view">View Model <Arrow size={14} width={2} /></span>
-              <span className="cc-metric">CO₂ → glucose</span>
+          <div className="hero-mini">
+            <button className="mini algae" onClick={() => navigate('/models')} aria-label="Algae Bioreactor model">
+              <span className="n">Algae Bioreactor</span>
+              <span className="m">CO₂ → glucose</span>
             </button>
-            <button className="cc-pcard cc-fermentor" type="button" aria-label="Yeast Fermenter model"
-              onClick={() => navigate('/models')}>
-              <span className="cc-name">Yeast Fermenter</span>
-              <span className="cc-view">View Model <Arrow size={14} width={2} /></span>
-              <span className="cc-metric">glucose → ethanol</span>
+            <button className="mini ferm" onClick={() => navigate('/models')} aria-label="Yeast Fermenter model">
+              <span className="n">Yeast Fermenter</span>
+              <span className="m">glucose → ethanol</span>
             </button>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }

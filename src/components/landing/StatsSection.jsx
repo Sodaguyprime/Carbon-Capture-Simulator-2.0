@@ -1,6 +1,7 @@
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { motion, animate } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { useTheme } from '../../context/ThemeContext'
+import { Spark } from './FeaturesSection'
 
 function AnimatedNumber({ target, suffix = '' }) {
   const [display, setDisplay] = useState(0)
@@ -29,87 +30,65 @@ function AnimatedNumber({ target, suffix = '' }) {
   return <span ref={ref}>{display.toLocaleString()}{suffix}</span>
 }
 
+// Honest, project-grounded figures — not vanity metrics.
 const metrics = [
-  { label: 'Mt CO₂ Modeled', value: 142, suffix: '+' },
-  { label: 'Active Researchers', value: 3800, suffix: '+' },
-  { label: 'Cost Reduction (vs. manual)', value: 73, suffix: '%' },
-  { label: 'Countries Represented', value: 54, suffix: '' },
+  { label: 'Kinetic models integrated', value: 3, suffix: '' },
+  { label: 'Reactor units, fully 3D', value: 3, suffix: '' },
+  { label: 'Ethanol purity modeled', value: 99, suffix: '%' },
+  { label: 'Max simulation window', value: 72, suffix: ' h' },
 ]
 
 export default function StatsSection() {
   const { theme } = useTheme()
 
   return (
-    <section style={{
-      padding: '100px 24px',
-      background: theme.bg,
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* Accent line */}
-      <div style={{
+    <section style={{ position: 'relative', overflow: 'hidden', padding: '104px 24px', background: theme.bg }}>
+      {/* center seam glow */}
+      <div aria-hidden style={{
         position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: 1, height: '100%',
-        background: `linear-gradient(to bottom, ${theme.accentGlow}, transparent)`,
-        pointerEvents: 'none',
+        background: `linear-gradient(to bottom, ${theme.accentGlow}, transparent)`, pointerEvents: 'none',
       }} />
 
-      <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <div style={{ position: 'relative', maxWidth: 1120, margin: '0 auto' }}>
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          style={{ textAlign: 'center', marginBottom: 72 }}
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+          style={{ textAlign: 'center', marginBottom: 60 }}
         >
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: theme.fontMono, fontSize: 12, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: theme.accent }}>
+            <Spark /> By the numbers
+          </span>
           <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 48px)',
-            fontWeight: 800,
-            color: theme.text,
-            letterSpacing: '-0.03em',
-            margin: '0 0 12px',
+            fontFamily: theme.fontDisplay, fontSize: 'clamp(30px, 4.4vw, 52px)', fontWeight: 500,
+            color: theme.text, letterSpacing: '-0.02em', margin: '18px 0 12px', lineHeight: 1.06,
           }}>
-            The numbers speak for themselves
+            A complete bioprocess,<br />in a single browser tab
           </h2>
           <p style={{ fontSize: 16, color: theme.textMuted }}>
-            Trusted by climate researchers, NGOs, and universities worldwide.
+            A student capstone built at Cyprus International University — modelled end to end.
           </p>
         </motion.div>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 1,
-          background: theme.border,
-          borderRadius: 20,
-          overflow: 'hidden',
-          border: `1px solid ${theme.border}`,
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 1,
+          background: theme.border, borderRadius: 20, overflow: 'hidden', border: `1px solid ${theme.border}`,
         }}>
           {metrics.map((m, i) => (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+              key={m.label}
+              initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              style={{
-                background: theme.bgCard,
-                padding: '40px 32px',
-                textAlign: 'center',
-              }}
+              style={{ background: theme.bgCard, padding: '44px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
             >
+              <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: `linear-gradient(${theme.gridLine} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLine} 1px, transparent 1px)`, backgroundSize: '22px 22px', opacity: 0.5 }} />
               <div style={{
-                fontSize: 'clamp(36px, 4vw, 52px)',
-                fontWeight: 800,
-                color: theme.accent,
-                letterSpacing: '-0.04em',
-                lineHeight: 1,
-                marginBottom: 10,
-                textShadow: `0 0 40px ${theme.accentGlow}`,
+                position: 'relative', fontFamily: theme.fontDisplay, fontSize: 'clamp(44px, 5vw, 62px)', fontWeight: 500,
+                color: theme.accent, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 12,
+                textShadow: `0 0 44px ${theme.accentGlow}`,
               }}>
                 <AnimatedNumber target={m.value} suffix={m.suffix} />
               </div>
-              <div style={{ fontSize: 14, color: theme.textMuted, fontWeight: 500 }}>
+              <div style={{ position: 'relative', fontFamily: theme.fontMono, fontSize: 12, color: theme.textMuted, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                 {m.label}
               </div>
             </motion.div>

@@ -58,8 +58,8 @@ export default function Navbar() {
               fill={theme.accentText} />
           </svg>
         </div>
-        <span style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.02em', color: theme.text }}>
-          CarbonCap<span style={{ color: theme.accent }}>.</span>
+        <span style={{ fontFamily: theme.fontDisplay, fontWeight: 600, fontSize: 20, letterSpacing: '-0.015em', color: theme.text }}>
+          CarbonCap<span style={{ color: theme.accent, fontStyle: 'italic' }}>.</span>
         </span>
       </motion.div>
     </Link>
@@ -81,7 +81,16 @@ export default function Navbar() {
       title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
       aria-label={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
     >
-      {mode === 'dark' ? '☀️' : '🌙'}
+      {mode === 'dark' ? (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={theme.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="4.2" />
+          <path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6" />
+        </svg>
+      ) : (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={theme.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+        </svg>
+      )}
     </motion.button>
   )
 
@@ -115,7 +124,8 @@ export default function Navbar() {
                   style={{
                     display: 'inline-block',
                     color: active ? theme.accent : theme.textMuted,
-                    fontSize: 14, fontWeight: active ? 700 : 500,
+                    fontFamily: theme.fontMono, fontSize: 12, fontWeight: active ? 600 : 500,
+                    letterSpacing: '0.04em', textTransform: 'uppercase',
                     padding: '6px 11px', borderRadius: 6, cursor: 'pointer',
                     transition: 'color 0.2s', whiteSpace: 'nowrap',
                   }}
@@ -141,8 +151,8 @@ export default function Navbar() {
               alignItems: 'center',
               background: location.pathname === '/simulation' ? theme.accentHover : theme.accent,
               color: theme.accentText, border: 'none', borderRadius: 8,
-              padding: '8px 18px', fontSize: 14, fontWeight: 600,
-              cursor: 'pointer', letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+              padding: '9px 18px', fontFamily: theme.fontMono, fontSize: 11.5, fontWeight: 600,
+              cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
             }}
           >
             Launch Simulator
